@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+      }
+
+      body {
+        background: radial-gradient(black, green, white);
+        height: 100vh;
+        width: 100vw;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      h1 {
+        font-size: 3rem;
+        position: absolute;
+        z-index: 5;
+        transform: translateY(-10rem);
+        text-shadow: 2px 1px 1px white, 2px 2px 15px white;
+      }
+
+      .question-mark {
+        transform: scale(0);
+        animation: growup 1s forwards;
+      }
+
+      body::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: blue;
+        opacity: 25%;
+      }
+
+      .gif-div {
+        transform: scale(0);
+        animation: growup 1.5s forwards;
+        position: absolute;
+      }
+
+      .gif-img {
+        height: 100%;
+        width: 100%;
+      }
+
+      @keyframes growup {
+        100% {
+          transform: scale(1);
+        }
+      }
+    </style>
+    <title>Happy Birthday!</title>
+  </head>
+  <body>
+    <h1>
+      41 now
+      <span class="question-mark">?</span>
+      <span class="question-mark">?</span>
+      <span class="question-mark">?</span>
+    </h1>
+    <div class="video-overlay"></div>
+
+    <script>
+      var videoOverlayEl = document.querySelector(".video-overlay");
+
+      const fetchHaHa = async () => {
+        if (!localStorage["laughinggifs"]) {
+          var apiKey = "uKphAK8kteX2OKtsDfh5n97qdjER4ErO";
+          let response = await fetch(
+            `https://api.giphy.com/v1/gifs/search?q='laughing'&api_key=${apiKey}`
+          );
+          let data = await response.json();
+          localStorage.setItem("laughinggifs", JSON.stringify(data.data));
+
+          //   console.log("Data", data);
+          printGifs(data.data);
+        } else {
+          console.log(
+            "you got local storage!",
+            JSON.parse(localStorage.getItem("laughinggifs"))
+          );
+          printGifs(JSON.parse(localStorage.getItem("laughinggifs")));
+        }
+      };
+
+      setTimeout(() => fetchHaHa(), 2000);
+
+      function printGifs(data) {
+        // console.log("Data", data);
+        for (let i = 0; i < 25; i++) {
+          setTimeout(() => {
+            let gifCard = document.createElement("div");
+            gifCard.className = "gif-div";
+            gifCard.innerHTML = `<img class="gif-img" src=${data[i].images.fixed_height.url}>`;
+            let randomHeight = (Math.random() * 280) | (0 + 65);
+            let randomWidth = (Math.random() * 280) | (0 + 65);
+            let randomX = Math.random() * parseInt(innerWidth);
+            let randomY = Math.random() * parseInt(innerHeight);
+            gifCard.style.left = randomX + "px";
+            gifCard.style.top = randomY + "px";
+            gifCard.style.height = randomHeight + "px";
+            gifCard.style.width = randomWidth + "px";
+            gifCard.style.backgroundColor = `rgb(${(Math.random() * 255) | 0},${
+              (Math.random() * 255) | 0
+            },${(Math.random() * 255) | 0})`;
+            console.log("rendered", i);
+            document.body.appendChild(gifCard);
+          }, i * 450);
+        }
+      }
+    </script>
+  </body>
+</html>
